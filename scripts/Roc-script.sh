@@ -336,5 +336,47 @@ fi
 # 清理 PassWall 的 chnlist 规则文件
 # echo "baidu.com"  > package/luci-app-passwall/luci-app-passwall/root/usr/share/passwall/rules/chnlist
 
+### 额外第三方插件（用户定制；passwall/openclash/athena-led/argon/aurora/wechatpush 仓库已内置，勿重复）###
+
+# AdGuardHome（若官方源已含可删此段）
+if package_enabled luci-app-adguardhome adguardhome; then
+  rm -rf feeds/luci/applications/luci-app-adguardhome
+  clone_repository https://github.com/rufengsuixing/luci-app-adguardhome master package/luci-app-adguardhome
+fi
+
+# Re:HomeProxy（1andrevich/homeproxy-hiddify；多核 hiddify-core/sing-box-extended + 内置 ByeDPI/Zapret2；包名 luci-app-re-homeproxy）
+#   分支 master（非 main）；代理核心不编进固件，刷后由 LuCI「Core & Tools」在线安装
+if package_enabled luci-app-re-homeproxy re-homeproxy; then
+  clone_repository https://github.com/1andrevich/homeproxy-hiddify master package/luci-app-re-homeproxy
+fi
+
+# NikkiRS
+if package_enabled luci-app-nikki-rs nikki-rs; then
+  clone_repository https://github.com/CHKayanami/OpenWrt-nikki-rs main package/nikki-rs
+fi
+
+# OpenWrt-momo
+if package_enabled luci-app-momo momo; then
+  clone_repository https://github.com/nikkinikki-org/OpenWrt-momo main package/momo
+fi
+
+# Clashoo（kenzok8 整仓，含 luci-app-clashoo）
+if package_enabled luci-app-clashoo; then
+  rm -rf package/clashoo
+  clone_repository https://github.com/kenzok8/openwrt-clashoo main package/clashoo
+fi
+
+# pushbot（微信推送；与仓库内置 wechatpush 二选一）
+if package_enabled luci-app-pushbot; then
+  clone_repository https://github.com/zzsj0928/luci-app-pushbot master package/luci-app-pushbot
+fi
+
+# Cloudflared（零信任隧道；若官方源已含 luci-app-cloudflared 可删此段）
+if package_enabled luci-app-cloudflared cloudflared; then
+  rm -rf feeds/luci/applications/luci-app-cloudflared
+  git_sparse_clone openwrt-24.10 https://github.com/immortalwrt/luci applications/luci-app-cloudflared
+  mv package/luci-app-cloudflared feeds/luci/applications/luci-app-cloudflared
+fi
+
 ./scripts/feeds update -i -a
 ./scripts/feeds install -a
